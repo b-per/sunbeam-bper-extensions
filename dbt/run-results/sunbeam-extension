@@ -156,7 +156,7 @@ if args.command == "node-details":
 
     newline = "\n"
 
-    if node["resource_type"] == "model":
+    if node["resource_type"] in ["model", "snapshot", "seed"]:
         list_depends_on = []
         for depends_on_node in node.get("depends_on", {}).get("nodes", []):
             # only show the nodes for now
