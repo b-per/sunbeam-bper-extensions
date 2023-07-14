@@ -1,0 +1,15 @@
+{
+    "title": "My first sunbeam script",
+    "type": "form",
+    "submitAction": {
+        "type": "copy",
+        "text": "echo",
+        "inputs": [
+            {
+                "type": "textarea", 
+                "name": "text", 
+                "title": "Text to echo"
+            }
+        ]
+    }
+}

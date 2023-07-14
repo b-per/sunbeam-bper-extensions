@@ -1,0 +1,18 @@
+{
+
+    "type": "detail",
+    "text": "Hello World!",
+    "actions": [
+      {
+        "type": "run",
+        "command": "echo Hello World!",
+        "onSuccess": "copy"
+      },
+      {
+        "type": "push",
+        "command": "sunbeam read test_preview.sb.json",
+        "title": "Down 1 page"
+      }
+    ]
+  }
+  
