@@ -8,7 +8,7 @@ Sunbeam is a great cross platform tool to build Terminal UIs based on JSON input
 
 - [install sunbeam](https://pomdtr.github.io/sunbeam/book/#installation-1)
   - the current repository has been based on `v1.0.0-rc.19` and it is expected that there will be breaking changes before the final `v1`
-- install the different extensions with `sunbeam extension install <cmd_name> <ulr_or_path>`
+- install the different extensions with `sunbeam extension install <cmd_name> <url_or_path>`
 
 ## additional information
 
