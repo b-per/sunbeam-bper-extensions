@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+COMMAND="${1:-list-providers}"
+PROVIDERS='["GtheSheep/dbt-cloud", "dbt-labs/dbtcloud"]'
+
+if [[ $COMMAND == "list-providers" ]]; then
+
+    echo $PROVIDERS |  sunbeam query --arg "command=$0" '
+        to_entries[] | 
+    {
+            title: .value,
+            actions: [
+                {
+                    type: "push",
+                    title: "List releases",
+                    command: [$command, "list-releases", .value],
+                }
+            ]
+        }
+    ' | sunbeam list --json --title "List Releases"
+
+elif [[ $COMMAND == "list-releases" ]]; then
+
+    PROVIDER=$2    
+    versions=$(curl "https://registry.terraform.io/v2/providers/${PROVIDER}?include=categories,moved-to,potential-fork-of,provider-versions,top-modules&include=categories%2Cmoved-to%2Cpotential-fork-of%2Cprovider-versions%2Ctop-modules")
+
+    ID=$(echo $versions | jq -r '.data.id')
+
+    echo $versions |  sunbeam query --arg "command=$0" --arg "provider=${PROVIDER}"  --arg "id=${ID}" '
+        .included | sort_by(.attributes["published-at"]) | reverse[] | 
+    {
+            title: .attributes.version,
+            subtitle: .attributes["published-at"][:10],
+            accessories: [
+                (.attributes.downloads | tostring)
+            ],
+            actions: [
+                {
+                    type: "push",
+                    title: "Download details",
+                    command: [$command, "show-details", $id, .attributes.version],
+                },
+                {
+                    type: "open", 
+                    title: "Open in Browser",
+                    key: "o",
+                    target: ("https://registry.terraform.io/providers/" + $provider + "/" +  .attributes.version)
+                }
+            ]
+        }
+    ' | sunbeam list --json --title "List Releases"
+
+
+elif [[ $COMMAND == "show-details" ]]; then
+
+    ID=$2
+    VERSION=$3
+
+    details=$(curl "https://registry.terraform.io/v2/providers/${ID}/downloads/summary?filter%5Bversion%5D=${VERSION}")
+
+    echo $details | sunbeam query '
+        {
+            title: "This week",
+            subtitle: (.data.attributes.week | tostring)
+        },
+        {
+            title: "This month",
+            subtitle: (.data.attributes.month | tostring)
+        },
+        {
+            title: "This year",
+            subtitle: (.data.attributes.year | tostring)
+        },
+        {
+            title: "Total",
+            subtitle: (.data.attributes.total | tostring)
+        }
+    ' | sunbeam list --json --title "Download Details"
+
+fi
