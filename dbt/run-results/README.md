@@ -5,7 +5,7 @@ This command displays the list of models/tests that were run as part of the last
 ## installation
 
 ```bash
-sunbeam extension install dbtrr ...
+sunbeam extension install dbtrr https://raw.githubusercontent.com/b-per/sunbeam-bper-extensions/main/dbt/run-results/sunbeam-extension
 ```
 
 ## usage
