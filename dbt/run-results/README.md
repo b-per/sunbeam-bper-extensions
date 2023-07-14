@@ -2,6 +2,8 @@
 
 This command displays the list of models/tests that were run as part of the last dbt command and sort them by first showing the errors and then listing the nodes by the time they took to run.
 
+![Alt text](out.gif)
+
 ## installation
 
 ```bash
