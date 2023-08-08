@@ -97,8 +97,6 @@ model_nums_not_finished = [model_num for model_num, count in counter_models.item
 models_not_finished = [model for model in log_lines if model.model_num in model_nums_not_finished]
 
 if len(log_lines) > 0:
-    print
-
     json.dump(
         {
             "type": "list",
