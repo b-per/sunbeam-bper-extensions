@@ -7,13 +7,13 @@ It is currently more of a POC than a full featured tool. Issues/ideas/PRs are we
 The code uses standard Python without any external dependency (so, no `requests`) to make it easy for anyone to install.
 
 
-# installation
+## Installation
 
 ```bash
 sunbeam extension install --alias dagster github:b-per/sunbeam-bper-extensions/dagster
 ```
 
-# configuration
+## Configuration
 
 Two environament variables can be made available in `~/.sunbeamrc` to connecto the API.
 
@@ -23,11 +23,11 @@ Two environament variables can be made available in `~/.sunbeamrc` to connecto t
 
 An example of commands to add to `~/.sunbeamrc` is shown in the folder.
 
-# usage
+## Usage
 
 Run `sunbeam dagster` to see all the commands available or directly select one of the subcommands, like `list-assets` or `list-runs`.
 
 
-# demo
+## Demo
 
 [![asciicast](https://asciinema.org/a/4O7e3EKbdTdIXMUk37vMlQsra.svg)](https://asciinema.org/a/4O7e3EKbdTdIXMUk37vMlQsra)

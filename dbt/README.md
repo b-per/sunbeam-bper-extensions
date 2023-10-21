@@ -10,7 +10,7 @@ Available Commands:
   running-models-paste List running models (Paste logs)
 ```
 
-## installation
+## Installation
 
 ```bash
 sunbeam extension install https://raw.githubusercontent.com/b-per/sunbeam-bper-extensions/main/dbt
