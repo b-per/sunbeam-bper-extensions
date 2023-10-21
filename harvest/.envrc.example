@@ -1,4 +1,0 @@
-export HARVEST_TOKEN=abcd
-export HARVEST_ACCOUNT=1234
-export HARVEST_USERID=5678
-export HARVEST_URL=https://xyz.harvestapp.com

@@ -1,40 +1,63 @@
 #! /bin/bash
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-source "${SCRIPT_DIR}/.envrc"
+# SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+source ~/.sunbeamrc
 
-timesheets=$(curl -s --request GET \
-  --url "https://api.harvestapp.com/api/v2/time_entries?user_id=${HARVEST_USERID}&from=2022-01-01" \
-  --header "authorization: Bearer ${HARVEST_TOKEN}" \
-  --header "harvest-account-id: ${HARVEST_ACCOUNT}" | jq '[.time_entries[] | select(.billable == true)] | group_by(.project.id)  | map({project_id: first.project.id | tostring, hours: (map(.hours) | add)})')
+if [ $# -eq 0 ]; then
+    sunbeam query -n '
+{
+    title: "Harvest",
+    commands: [
+        { name: "list-projects", mode: "view", title: "List Projects" }
+    ]
+}'
+exit 0
+fi
 
-projects=$(curl -s --request GET \
-  --url https://api.harvestapp.com/api/v2/projects \
-  --header "authorization: Bearer ${HARVEST_TOKEN}" \
-  --header "harvest-account-id: ${HARVEST_ACCOUNT}" | jq '[.projects[] | select(.is_active == true) | {project_id: .id | tostring, name: .name, budget: .budget, client: .client.name}]')
+COMMAND="${1}"
+if [[ $COMMAND == "list-projects" ]]; then
+    timesheets=$(curl -s --request GET \
+    --url "https://api.harvestapp.com/api/v2/time_entries?user_id=${SB_HARVEST_USERID}&from=2022-01-01" \
+    --header "authorization: Bearer ${SB_HARVEST_TOKEN}" \
+    --header "harvest-account-id: ${SB_HARVEST_ACCOUNT}" | jq '[.time_entries[] | select(.billable == true)] | group_by(.project.id)  | map({project_id: first.project.id | tostring, hours: (map(.hours) | add)})')
 
-results=$(jq -n --argjson projects "$projects" --argjson timesheets "$timesheets" '[JOIN(INDEX($projects[]; .project_id); $timesheets[]; .project_id; add) | select(.client) | . += {url: ("'$HARVEST_URL'/projects/" + .project_id)}]')
+    projects=$(curl -s --request GET \
+    --url https://api.harvestapp.com/api/v2/projects \
+    --header "authorization: Bearer ${SB_HARVEST_TOKEN}" \
+    --header "harvest-account-id: ${SB_HARVEST_ACCOUNT}" | jq '[.projects[] | select(.is_active == true) | {project_id: .id | tostring, name: .name, budget: .budget, client: .client.name}]')
 
-echo $results | sunbeam query '.[] | {
-    title: (.client + " - " + .name),
-    subtitle: ((.hours | tostring) + " / " + (.budget | tostring)),
-    actions: [
-        {
-            type: "open",
-            title: "Open Harvest",
-            target: .url,
-        },
-        {
-            type: "open",
-            title: "Add Time",
-            target: "'$HARVEST_URL'/time/week",
-            key: "a"
-        },
-        {
-            type: "copy",
-            title: "Copy Hours",
-            text: .hours | tostring,
-            key: "l"
-        }
-    ] 
-}' | sunbeam list --json --title "Harvest"
+    results=$(jq -n --argjson projects "$projects" --argjson timesheets "$timesheets" '[JOIN(INDEX($projects[]; .project_id); $timesheets[]; .project_id; add) | select(.client) | . += {url: ("'$SB_HARVEST_URL'/projects/" + .project_id)}]')
+
+    echo $results | sunbeam query '[ .[] | 
+    {
+        title: (.client + " - " + .name),
+        subtitle: ((.hours | tostring) + " / " + (.budget | tostring)),
+        actions: [
+            {
+                title: "Open Harvest",
+                onAction: {
+                    type: "open",
+                    target: .url
+                }
+            },
+            {
+                title: "Add Time",
+                key: "a",
+                onAction: {
+                    type: "open",
+                    target: "'$SB_HARVEST_URL'/time/week"
+                }
+            },
+            {
+                title: "Copy Hours",
+                key: "l",
+                onAction: {
+                    type: "copy",
+                    text: .hours | tostring
+                }
+            }
+        ] 
+    }
+    ] | {"type": "list", "title" : "Harvest", "items" : . }'
+fi
+

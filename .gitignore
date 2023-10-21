@@ -3,3 +3,4 @@ wip/
 raycast-sunbeam/
 dev/
 .DS_Store
+__pycache__

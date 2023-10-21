@@ -7,11 +7,11 @@ Sunbeam is a great cross platform tool to build Terminal UIs based on JSON input
 ## requirements
 
 - [install sunbeam](https://pomdtr.github.io/sunbeam/book/#installation-1)
-  - the current repository has been based on `v1.0.0-rc.19` and it is expected that there will be breaking changes before the final `v1`
-- install the different extensions with `sunbeam extension install <cmd_name> <url_or_path>`
+  - the current repository has been tested on `v1.0.0-rc.56` and there might be breaking changes before the final `v1`
+- install the different extensions with `sunbeam extension install --alias <alias> <url_or_path>`
 
 ## additional information
 
 - some commands require Python installed (out of the box on MacOS but needs to be installed separately on Windows)
 - some commans require `bash` and will most likely not work on Windows
-- some commands require having environment variables set. for those, a `.envrc.example` is provided to list the env variables that need to be set
+- some commands require having environment variables set in `~/.sunbeamrc`. for those, an example is provided in the folder to list the env variables that need to be set

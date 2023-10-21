@@ -2,81 +2,109 @@
 
 set -eo pipefail
 
-COMMAND="${1:-list-providers}"
-PROVIDERS='["GtheSheep/dbt-cloud", "dbt-labs/dbtcloud"]'
+COMMAND="$1"
+PROVIDERS='["dbt-labs/dbtcloud", "GtheSheep/dbt-cloud", "fivetran/fivetran", "Snowflake-Labs/snowflake", "databricks/databricks", "integrations/github"]'
+
+if [ $# -eq 0 ]; then
+/Users/bper/dev/sunbeam-main/sunbeam query -n '{
+    title: "TF",
+    commands: [
+        {name: "list-providers", mode: "view", title: "List Providers"},
+        {name: "list-releases", mode: "view", title: "List Releases", params: [{name: "provider", type: "string", required: true}]},
+        {name: "show-details", mode: "view", title: "Show Details", params: [{name: "id", type: "string", required: true}, {name: "version", type: "string", required: true}]}
+    ]
+}'
+exit 0
+fi
+
 
 if [[ $COMMAND == "list-providers" ]]; then
 
-    echo $PROVIDERS |  sunbeam query --arg "command=$0" '
-        to_entries[] | 
-    {
-            title: .value,
-            actions: [
-                {
-                    type: "push",
-                    title: "List releases",
-                    command: [$command, "list-releases", .value],
-                }
-            ]
-        }
-    ' | sunbeam list --json --title "List Releases"
+    echo $PROVIDERS |  /Users/bper/dev/sunbeam-main/sunbeam query --arg "command=$0" '
+        {
+        type: "list",
+        items: map({
+            title: .,
+            actions: [{
+            title: "List releases",
+            onAction: {
+                type: "run",
+                command: "list-releases",
+                params: { provider: . }
+            }
+            }]
+        })
+        }'
+     exit 0
 
 elif [[ $COMMAND == "list-releases" ]]; then
 
-    PROVIDER=$2    
+    PROVIDER=$(sunbeam query -r '.params.provider')
     versions=$(curl "https://registry.terraform.io/v2/providers/${PROVIDER}?include=categories,moved-to,potential-fork-of,provider-versions,top-modules&include=categories%2Cmoved-to%2Cpotential-fork-of%2Cprovider-versions%2Ctop-modules")
 
     ID=$(echo $versions | jq -r '.data.id')
 
-    echo $versions |  sunbeam query --arg "command=$0" --arg "provider=${PROVIDER}"  --arg "id=${ID}" '
-        .included | sort_by(.attributes["published-at"]) | reverse[] | 
-    {
-            title: .attributes.version,
-            subtitle: .attributes["published-at"][:10],
-            accessories: [
-                (.attributes.downloads | tostring)
-            ],
+    echo $versions |  /Users/bper/dev/sunbeam-main/sunbeam query --arg "command=$0" --arg "provider=${PROVIDER}"  --arg "id=${ID}" '
+        {
+        type: "list",
+        title: "List of releases",
+        items: 
+            (.included | sort_by(.attributes["published-at"]) | reverse | map({
+            title: (.attributes.version // "ALL"),
+            subtitle: (.attributes["published-at"][:10] // "N/A"),
+            accessories: [(.attributes.downloads | tostring)],
             actions: [
                 {
-                    type: "push",
                     title: "Download details",
-                    command: [$command, "show-details", $id, .attributes.version],
+                    onAction: {
+                        type: "run",
+                        command: "show-details",
+                        params: { id: $id, version: (.attributes.version // "") }
+                    }
                 },
                 {
-                    type: "open", 
                     title: "Open in Browser",
                     key: "o",
-                    target: ("https://registry.terraform.io/providers/" + $provider + "/" +  .attributes.version)
+                    onAction: {
+                        type: "open",
+                        target: ("https://registry.terraform.io/providers/" + $provider + "/" + (.attributes.version // ""))
+                    }
                 }
             ]
-        }
-    ' | sunbeam list --json --title "List Releases"
+            }))
+        }'
+     exit 0
 
 
 elif [[ $COMMAND == "show-details" ]]; then
 
-    ID=$2
-    VERSION=$3
+    PARAMS=$(sunbeam query '.params')
+    ID=$(echo $PARAMS | sunbeam query -r '.id')
+    VERSION=$(echo $PARAMS | sunbeam query -r '.version')
 
     details=$(curl "https://registry.terraform.io/v2/providers/${ID}/downloads/summary?filter%5Bversion%5D=${VERSION}")
 
-    echo $details | sunbeam query '
+    echo $details | /Users/bper/dev/sunbeam-main/sunbeam query '
         {
-            title: "This week",
-            subtitle: (.data.attributes.week | tostring)
-        },
-        {
-            title: "This month",
-            subtitle: (.data.attributes.month | tostring)
-        },
-        {
-            title: "This year",
-            subtitle: (.data.attributes.year | tostring)
-        },
-        {
-            title: "Total",
-            subtitle: (.data.attributes.total | tostring)
-        }
-    ' | sunbeam list --json --title "Download Details"
+            type: "list", 
+            items: [
+                {
+                    title: "This week",
+                    subtitle: (.data.attributes.week | tostring)
+                },
+                {
+                    title: "This month",
+                    subtitle: (.data.attributes.month | tostring)
+                },
+                {
+                    title: "This year",
+                    subtitle: (.data.attributes.year | tostring)
+                },
+                {
+                    title: "Total",
+                    subtitle: (.data.attributes.total | tostring)
+                }
+            ]
+        }'
 
 fi

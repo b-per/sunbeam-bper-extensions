@@ -1,0 +1,2 @@
+export SB_DAGSTER_URL=https://dagster.mydomain.io
+export SB_DAGSTER_EXTRA_HEADERS={"CF-Access-Client-Id": "abcd", "CF-Access-Client-Secret": "efgh"}'

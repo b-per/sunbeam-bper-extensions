@@ -1,0 +1,4 @@
+export SB_HARVEST_TOKEN=abcd
+export SB_HARVEST_ACCOUNT=1234
+export SB_HARVEST_USERID=5678
+export SB_HARVEST_URL=https://xyz.harvestapp.com

@@ -4,11 +4,28 @@
 
 set -eo pipefail
 
-COMMAND="${1:-list-repos}"
+COMMAND="${1}"
+
+set -e
+alias sunbeam='/Users/bper/dev/sunbeam-main/sunbeam'
+
+# if no arguments are passed, return the extension's manifest
+if [ $# -eq 0 ]; then
+    sunbeam query -n '
+{
+    title: "GitHub",
+    commands: [
+        { name: "list-repos", mode: "view", title: "List Repos" },
+        { name: "list-issues", mode: "view", title: "List Issue", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] },
+        { name: "list-prs", mode: "view", title: "List PRs", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] }
+    ]
+}'
+exit 0
+fi
 
 if [[ $COMMAND == "list-repos" ]]; then
     # shellcheck disable=SC2016
-    gh api "/user/repos?sort=updated&per_page=100" | sunbeam query --arg "command=$0" '.[] |
+    gh api "/user/repos?sort=updated&per_page=100" | sunbeam query --arg "command=$0" '[ .[] |
         {
             title: .name,
             subtitle: (.description // ""),
@@ -16,30 +33,30 @@ if [[ $COMMAND == "list-repos" ]]; then
                 "\(.stargazers_count) *"
             ],
             actions: [
-                {type: "open", target: .html_url},
-                {
-                    type: "push",
-                    title: "List Pull Requests",
-                    key: "p",
-                    command: [$command, "list-prs", .full_name],
+                { 
+                    title: "Open",
+                    onAction: {
+                        type: "open", target: .html_url
+                    }
                 },
                 {
-                    type: "push",
+                    title: "List Pull Requests",
+                    onAction: {type: "run", command: "list-prs", params: {repo: .full_name}},
+                    key: "p"
+                },
+                {
                     title: "List Issues",
                     key: "i",
-                    command: [$command, "list-issues", .full_name],
+                    onAction: {type: "run", command: "list-issues", params: {repo: .full_name}}
                 }
             ]
         }
-    ' | sunbeam list --json --title "List Repositories"
+    ] | {"type": "list", "title" : "List Repositories", "items" : .}'
+    exit 0
 elif [[ $COMMAND == "list-prs" ]]; then
-    REPO=$2
-    if [[ -z "$REPO" ]]; then
-        echo "Usage: $0 list-prs <repo>"
-        exit 1
-    fi
+    REPO=$(sunbeam query -r '.params.repo')
 
-    gh pr list --repo "$REPO" --json author,title,url,number | sunbeam query '.[] |
+    gh pr list --repo "$REPO" --json author,title,url,number | sunbeam query '[ .[] |
     {
         title: .title,
         subtitle: .author.login,
@@ -47,19 +64,22 @@ elif [[ $COMMAND == "list-prs" ]]; then
             "#\(.number)"
         ],
         actions: [
-            {type: "open", title: "Open in Browser", target: .url},
-            {type: "copy", title: "Copy URL", text: .url}
+            {
+                title: "Open in Browser", 
+                onAction: {type: "open", target: .url}
+            },
+            {
+                title: "Copy URL", 
+                onAction: {type: "copy", text: .url}
+            }
         ]
     }
-    ' | sunbeam list --json --title "List Pull Requests"
+    ] | {"type": "list", "title" : "List Pull Requests", "items" : .}'
+    exit 0
 elif [[ $COMMAND == "list-issues" ]]; then
-    REPO=$2
-    if [[ -z "$REPO" ]]; then
-        echo "Usage: $0 list-prs <repo>"
-        exit 1
-    fi
+    REPO=$(sunbeam query -r '.params.repo')
 
-    gh issue list --repo "$REPO" --json author,title,url,number | sunbeam query '.[] |
+    gh issue list --repo "$REPO" --json author,title,url,number | sunbeam query '[ .[] |
     {
         title: .title,
         subtitle: .author.login,
@@ -67,9 +87,16 @@ elif [[ $COMMAND == "list-issues" ]]; then
             "#\(.number)"
         ],
         actions: [
-            {type: "open", title: "Open in Browser", target: .url},
-            {type: "copy", title: "Copy URL", text: .url}
+            {
+                title: "Open in Browser", 
+                onAction: {type: "open", target: .url}
+            },
+            {
+                title: "Copy URL", 
+                onAction: {type: "copy", text: .url}
+            }
         ]
-    }
-    ' | sunbeam list --json --title "List Issues"
+    } 
+    ] | {"type": "list", "title" : "List Issue", "items" : . }'
+    exit 0
 fi
