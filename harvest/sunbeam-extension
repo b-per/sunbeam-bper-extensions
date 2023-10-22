@@ -28,7 +28,7 @@ if [[ $COMMAND == "list-projects" ]]; then
 
     results=$(jq -n --argjson projects "$projects" --argjson timesheets "$timesheets" '[JOIN(INDEX($projects[]; .project_id); $timesheets[]; .project_id; add) | select(.client) | . += {url: ("'$SB_HARVEST_URL'/projects/" + .project_id)}]')
 
-    echo $results | sunbeam query '[ .[] | 
+    echo $results | sunbeam query '[ .[] |
     {
         title: (.client + " - " + .name),
         subtitle: ((.hours | tostring) + " / " + (.budget | tostring)),
@@ -56,8 +56,7 @@ if [[ $COMMAND == "list-projects" ]]; then
                     text: .hours | tostring
                 }
             }
-        ] 
+        ]
     }
     ] | {"type": "list", "title" : "Harvest", "items" : . }'
 fi
-

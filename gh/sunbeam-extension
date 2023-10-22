@@ -33,7 +33,7 @@ if [[ $COMMAND == "list-repos" ]]; then
                 "\(.stargazers_count) *"
             ],
             actions: [
-                { 
+                {
                     title: "Open",
                     onAction: {
                         type: "open", target: .html_url
@@ -65,11 +65,11 @@ elif [[ $COMMAND == "list-prs" ]]; then
         ],
         actions: [
             {
-                title: "Open in Browser", 
+                title: "Open in Browser",
                 onAction: {type: "open", target: .url}
             },
             {
-                title: "Copy URL", 
+                title: "Copy URL",
                 onAction: {type: "copy", text: .url}
             }
         ]
@@ -88,15 +88,15 @@ elif [[ $COMMAND == "list-issues" ]]; then
         ],
         actions: [
             {
-                title: "Open in Browser", 
+                title: "Open in Browser",
                 onAction: {type: "open", target: .url}
             },
             {
-                title: "Copy URL", 
+                title: "Copy URL",
                 onAction: {type: "copy", text: .url}
             }
         ]
-    } 
+    }
     ] | {"type": "list", "title" : "List Issue", "items" : . }'
     exit 0
 fi

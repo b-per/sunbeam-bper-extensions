@@ -1,4 +1,4 @@
-# dagster 
+# dagster
 
 This extension queries the [Dagster](https://dagster.io/) GraphQL API to retrieve information from runs and assets.
 
@@ -18,7 +18,7 @@ sunbeam extension install --alias dagster github:b-per/sunbeam-bper-extensions/d
 Two environament variables can be made available in `~/.sunbeamrc` to connecto the API.
 
 - `SB_DAGSTER_URL`: the URL of the Dagster instance
-- `SB_DAGSTER_EXTRA_HEADERS`: a JSON string to add to the Headers of the HTTP requests 
+- `SB_DAGSTER_EXTRA_HEADERS`: a JSON string to add to the Headers of the HTTP requests
 (in my example, I used specific headers to access) a Dagster instance behind CloudFlare
 
 An example of commands to add to `~/.sunbeamrc` is shown in the folder.

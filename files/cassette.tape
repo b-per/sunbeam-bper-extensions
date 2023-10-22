@@ -18,4 +18,3 @@ Enter
 Sleep 1s
 Tab
 Sleep 2.5s
-

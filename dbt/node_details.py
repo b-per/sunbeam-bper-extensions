@@ -46,10 +46,10 @@ Config:
   - Contract: {node_config.get("contract","N/A")}
   - Constraints: {node_config.get("constraints","N/A")}
 
-Depends on models: 
+Depends on models:
 {newline.join(list_depends_on)}
 
-Tests: 
+Tests:
 {newline.join(tests_to_print) if tests_to_print else "  - None"}
 """
 

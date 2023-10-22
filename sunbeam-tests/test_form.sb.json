@@ -6,8 +6,8 @@
         "text": "echo",
         "inputs": [
             {
-                "type": "textarea", 
-                "name": "text", 
+                "type": "textarea",
+                "name": "text",
                 "title": "Text to echo"
             }
         ]

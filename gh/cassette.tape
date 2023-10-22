@@ -12,6 +12,6 @@ Sleep 7s
 Tab
 Sleep 1s
 Tab
-Sleep 1s 
+Sleep 1s
 Enter
 Sleep 4s

@@ -48,7 +48,7 @@ elif [[ $COMMAND == "list-releases" ]]; then
         {
         type: "list",
         title: "List of releases",
-        items: 
+        items:
             (.included | sort_by(.attributes["published-at"]) | reverse | map({
             title: (.attributes.version // "ALL"),
             subtitle: (.attributes["published-at"][:10] // "N/A"),
@@ -86,7 +86,7 @@ elif [[ $COMMAND == "show-details" ]]; then
 
     echo $details | /Users/bper/dev/sunbeam-main/sunbeam query '
         {
-            type: "list", 
+            type: "list",
             items: [
                 {
                     title: "This week",
