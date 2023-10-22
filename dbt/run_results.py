@@ -4,9 +4,9 @@ from pathlib import Path
 from datetime import datetime
 import yaml
 
-def execute(dir, include_packages = False):
 
-    run_results_file_path =dir /  Path("target/run_results.json")
+def execute(dir, include_packages=False):
+    run_results_file_path = dir / Path("target/run_results.json")
     run_results = json.loads(run_results_file_path.read_text())
 
     manifest_file_path = dir / Path("target/manifest.json")
@@ -14,7 +14,6 @@ def execute(dir, include_packages = False):
 
     dbt_project_file = dir / Path("dbt_project.yml")
     dbt_project_name = yaml.safe_load(dbt_project_file.read_text())["name"]
-
 
     def show_status(result: dict) -> str:
         status = result["status"]
@@ -27,7 +26,6 @@ def execute(dir, include_packages = False):
         else:
             return f"{status} ❌"
 
-
     def execute_time_int(result: dict) -> int:
         if len(result["timing"]) < 2:
             return 999_999
@@ -35,14 +33,12 @@ def execute(dir, include_packages = False):
         start_time = datetime.fromisoformat(result["timing"][1]["started_at"].rstrip("Z"))
         return int((end_time - start_time).total_seconds())
 
-
     def execute_time_seconds(result: dict) -> str:
         execute_time = execute_time_int(result)
         if execute_time == 999_999:
             return ""
         else:
             return "{:,}".format(execute_time) + " secs"
-
 
     def number_rows(result: dict) -> str:
         if "rows_affected" not in result["adapter_response"]:
@@ -56,7 +52,7 @@ def execute(dir, include_packages = False):
 
     def show_unique_id(result: dict) -> str:
         unique_id = result["unique_id"]
-        unique_id_model, unique_id_package, unique_id_node, *extra = unique_id.split(".") 
+        unique_id_model, unique_id_package, unique_id_node, *extra = unique_id.split(".")
         return f"{unique_id_model[0].upper()}: {unique_id_node}"
 
     list_rows = []
@@ -77,7 +73,7 @@ def execute(dir, include_packages = False):
                 "onAction": {
                     "type": "copy",
                     "text": result["unique_id"].split(".")[-1],
-                }
+                },
             }
         )
 
@@ -86,10 +82,10 @@ def execute(dir, include_packages = False):
                 {
                     "title": "Open file",
                     "key": "o",
-                    "onAction" : {
+                    "onAction": {
                         "type": "open",
                         "target": manifest["nodes"][result["unique_id"]]["original_file_path"],
-                    }
+                    },
                 }
             )
 
@@ -102,7 +98,7 @@ def execute(dir, include_packages = False):
                     "onAction": {
                         "type": "open",
                         "target": manifest["nodes"][result["unique_id"]]["compiled_path"],
-                    }
+                    },
                 }
             )
 
@@ -117,7 +113,7 @@ def execute(dir, include_packages = False):
                         "onAction": {
                             "type": "open",
                             "target": yml_file,
-                        }
+                        },
                     }
                 )
 
@@ -128,10 +124,8 @@ def execute(dir, include_packages = False):
                 "onAction": {
                     "type": "run",
                     "command": "node-details",
-                    "params": {
-                        "filter": result["unique_id"]
-                    }
-                }
+                    "params": {"filter": result["unique_id"]},
+                },
             }
         )
 
@@ -145,4 +139,3 @@ def execute(dir, include_packages = False):
         },
         sys.stdout,
     )
-
