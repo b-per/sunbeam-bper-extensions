@@ -58,9 +58,7 @@ def execute(command, filter=None):
                             "onAction": {
                                 "type": "run",
                                 "command": "last-mater-single-asset",
-                                "params": {
-                                    "filter": ".".join(asset_mater["key"]["path"])
-                                },
+                                "params": {"filter": ".".join(asset_mater["key"]["path"])},
                             },
                         },
                         {
@@ -69,9 +67,7 @@ def execute(command, filter=None):
                             "onAction": {
                                 "type": "run",
                                 "command": "plot-asset-mater",
-                                "params": {
-                                    "filter": ".".join(asset_mater["key"]["path"])
-                                },
+                                "params": {"filter": ".".join(asset_mater["key"]["path"])},
                             },
                         },
                     ],
@@ -131,11 +127,7 @@ def execute(command, filter=None):
             "type": "list",
             "items": [
                 {
-                    "title": (
-                        "✅ "
-                        if asset_mater["stepStats"]["status"] == "SUCCESS"
-                        else "❌ "
-                    )
+                    "title": ("✅ " if asset_mater["stepStats"]["status"] == "SUCCESS" else "❌ ")
                     + asset_mater["runId"]
                     + " - "
                     + asset_mater["stepKey"],
@@ -161,9 +153,7 @@ def execute(command, filter=None):
                         },
                     ],
                 }
-                for asset_mater in response["data"]["assetOrError"][
-                    "assetMaterializations"
-                ]
+                for asset_mater in response["data"]["assetOrError"]["assetMaterializations"]
             ],
         }
 
@@ -236,7 +226,7 @@ def execute(command, filter=None):
         ret = {
             "title": f"Last materializations for {filter}",
             "type": "detail",
-            "markdown": f"```{plot([myy], config)}```"
+            "markdown": f"```{plot([myy], config)}```",
         }
 
         print(json.dumps(ret, indent=2))

@@ -66,9 +66,7 @@ if sys.argv[1] == "ls":
                     },
                 },
                 {
-                    "title": "Show Hidden Files"
-                    if not show_hidden
-                    else "Hide Hidden Files",
+                    "title": "Show Hidden Files" if not show_hidden else "Hide Hidden Files",
                     "key": "h",
                     "onAction": {
                         "type": "reload",

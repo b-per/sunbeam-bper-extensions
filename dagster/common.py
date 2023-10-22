@@ -58,8 +58,7 @@ def run_duration(materialization):
         return dbt_metadata_entries
     else:
         return format(
-            materialization["stepStats"]["endTime"]
-            - materialization["stepStats"]["startTime"],
+            materialization["stepStats"]["endTime"] - materialization["stepStats"]["startTime"],
             ".1f",
         )
 
