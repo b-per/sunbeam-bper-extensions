@@ -140,27 +140,33 @@ def execute(input_type, dir="."):
                         "title": f"{model.model_num} - {model.model_name}",
                         "subtitle": str(model.timecode.time()),
                         "actions": [
-                            {
-                                "title": "Refresh",
-                                "onAction": {
-                                    "type": "run",
-                                    "command": "running-models-file",
+                            action
+                            for action in [
+                                {
+                                    "title": "Refresh",
+                                    "onAction": {
+                                        "type": "run",
+                                        "command": "running-models-file",
+                                    },
+                                }
+                                if input_type == "file"
+                                else None,
+                                {
+                                    "title": "Copy Name",
+                                    "onAction": {
+                                        "type": "copy",
+                                        "text": model.model_name.split(".")[-1],
+                                    },
                                 },
-                            },
-                            {
-                                "title": "Copy Name",
-                                "onAction": {
-                                    "type": "copy",
-                                    "text": model.model_name.split(".")[-1],
+                                {
+                                    "title": "Refresh",
+                                    "onAction": {
+                                        "type": "run",
+                                        "command": "running-models-file",
+                                    },
                                 },
-                            },
-                            {
-                                "title": "Refresh",
-                                "onAction": {
-                                    "type": "run",
-                                    "command": "running-models-file",
-                                },
-                            },
+                            ]
+                            if action is not None
                         ],
                     }
                     for model in sorted(models_not_finished, key=lambda x: x.model_num)
@@ -174,7 +180,9 @@ def execute(input_type, dir="."):
             message = "All models finished! 🎉"
         else:
             if input_type == "paste":
-                message = "No valid logs were parsed, get the logs in your clipboard and try again."
+                message = (
+                    "No valid logs were parsed, get the logs in your clipboard and try again."
+                )
             if input_type == "file":
                 message = "No valid logs were parsed, is dbt tee-ing to `dbt.stdout`? \n\n If it is, dbt might still be warming up!"
 
