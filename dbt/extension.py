@@ -54,7 +54,10 @@ if len(sys.argv) == 1:
 if sys.argv[1] == "run-results":
     payload = json.load(sys.stdin)
     work_dir = payload["cwd"]
-    run_results.execute(dir=work_dir)
+    incl_packages = (
+        payload["params"]["include-packages"] if "include-packages" in payload["params"] else False
+    )
+    run_results.execute(dir=work_dir, include_packages=incl_packages)
 
 if sys.argv[1] == "node-details":
     payload = json.load(sys.stdin)

@@ -5,7 +5,7 @@ from datetime import datetime
 import yaml
 
 
-def execute(dir, include_packages=False):
+def execute(dir, include_packages):
     run_results_file_path = dir / Path("target/run_results.json")
     run_results = json.loads(run_results_file_path.read_text())
 
@@ -128,9 +128,39 @@ def execute(dir, include_packages=False):
                 },
             }
         )
+        actions.append(
+            {
+                "title": "Toggle packages",
+                "onAction": {
+                    "type": "run",
+                    "command": "run-results",
+                    "params": {"include-packages": not include_packages},
+                },
+            }
+        )
 
         row["actions"] = actions
         list_rows.append(row)
+
+    if not list_rows:
+        json.dump(
+            {
+                "type": "detail",
+                "markdown": "No models run",
+                "actions": [
+                    {
+                        "title": "Toggle packages",
+                        "onAction": {
+                            "type": "run",
+                            "command": "run-results",
+                            "params": {"include-packages": not include_packages},
+                        },
+                    }
+                ],
+            },
+            sys.stdout,
+        )
+        return
 
     json.dump(
         {
