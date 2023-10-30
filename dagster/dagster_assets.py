@@ -55,20 +55,16 @@ def execute(command, filter=None):
                         {
                             "title": "List All Materializations",
                             "key": "m",
-                            "onAction": {
-                                "type": "run",
-                                "command": "last-mater-single-asset",
-                                "params": {"filter": ".".join(asset_mater["key"]["path"])},
-                            },
+                            "type": "run",
+                            "command": "last-mater-single-asset",
+                            "params": {"filter": ".".join(asset_mater["key"]["path"])},
                         },
                         {
                             "title": "Plot Materialization Time",
                             "key": "p",
-                            "onAction": {
-                                "type": "run",
-                                "command": "plot-asset-mater",
-                                "params": {"filter": ".".join(asset_mater["key"]["path"])},
-                            },
+                            "type": "run",
+                            "command": "plot-asset-mater",
+                            "params": {"filter": ".".join(asset_mater["key"]["path"])},
                         },
                     ],
                 }
@@ -138,18 +134,14 @@ def execute(command, filter=None):
                         {
                             "title": "Check run on Dagster",
                             "key": "m",
-                            "onAction": {
-                                "type": "open",
-                                "target": f"""{DAGSTER_URL}/runs/{asset_mater["runId"]}""",
-                            },
+                            "type": "open",
+                            "target": f"""{DAGSTER_URL}/runs/{asset_mater["runId"]}""",
                         },
                         {
                             "title": "Copy URL",
                             "key": "y",
-                            "onAction": {
-                                "type": "copy",
-                                "text": f"""{DAGSTER_URL}/runs/{asset_mater["runId"]}""",
-                            },
+                            "type": "copy",
+                            "text": f"""{DAGSTER_URL}/runs/{asset_mater["runId"]}""",
                         },
                     ],
                 }
@@ -226,7 +218,7 @@ def execute(command, filter=None):
         ret = {
             "title": f"Last materializations for {filter}",
             "type": "detail",
-            "markdown": f"```{plot([myy], config)}```",
+            "text": f"{plot([myy], config)}",
         }
 
         print(json.dumps(ret, indent=2))

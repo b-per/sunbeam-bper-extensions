@@ -57,10 +57,8 @@ def execute():
                     {
                         "title": "Check run on Dagster",
                         "key": "m",
-                        "onAction": {
-                            "type": "open",
-                            "target": f"""{DAGSTER_URL}/runs/{job_result["id"]}""",
-                        },
+                        "type": "open",
+                        "target": f"""{DAGSTER_URL}/runs/{job_result["id"]}""",
                     }
                 ],
             }

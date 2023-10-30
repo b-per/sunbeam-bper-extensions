@@ -4,7 +4,7 @@
 
 set -eo pipefail
 
-COMMAND="${1}"
+COMMAND=$(echo "$1" | jq -r '.command')
 
 set -e
 alias sunbeam='/Users/bper/dev/sunbeam-main/sunbeam'
@@ -15,9 +15,9 @@ if [ $# -eq 0 ]; then
 {
     title: "GitHub",
     commands: [
-        { name: "list-repos", mode: "view", title: "List Repos" },
-        { name: "list-issues", mode: "view", title: "List Issue", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] },
-        { name: "list-prs", mode: "view", title: "List PRs", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] }
+        { name: "list-repos", mode: "page", title: "List Repos" },
+        { name: "list-issues", mode: "page", title: "List Issue", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] },
+        { name: "list-prs", mode: "page", title: "List PRs", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] }
     ]
 }'
 exit 0
@@ -35,26 +35,29 @@ if [[ $COMMAND == "list-repos" ]]; then
             actions: [
                 {
                     title: "Open",
-                    onAction: {
-                        type: "open", target: .html_url
-                    }
+                    type: "open",
+                    target: .html_url
                 },
                 {
                     title: "List Pull Requests",
-                    onAction: {type: "run", command: "list-prs", params: {repo: .full_name}},
+                    type: "run",
+                    command: "list-prs",
+                    params: {repo: .full_name},
                     key: "p"
                 },
                 {
                     title: "List Issues",
                     key: "i",
-                    onAction: {type: "run", command: "list-issues", params: {repo: .full_name}}
+                    type: "run",
+                    command: "list-issues",
+                    params: {repo: .full_name}
                 }
             ]
         }
     ] | {"type": "list", "title" : "List Repositories", "items" : .}'
     exit 0
 elif [[ $COMMAND == "list-prs" ]]; then
-    REPO=$(sunbeam query -r '.params.repo')
+    REPO=$(echo "$1" | sunbeam query -r '.params.repo')
 
     gh pr list --repo "$REPO" --json author,title,url,number | sunbeam query '[ .[] |
     {
@@ -66,18 +69,20 @@ elif [[ $COMMAND == "list-prs" ]]; then
         actions: [
             {
                 title: "Open in Browser",
-                onAction: {type: "open", target: .url}
+                type: "open",
+                target: .url
             },
             {
                 title: "Copy URL",
-                onAction: {type: "copy", text: .url}
+                type: "copy",
+                text: .url
             }
         ]
     }
     ] | {"type": "list", "title" : "List Pull Requests", "items" : .}'
     exit 0
 elif [[ $COMMAND == "list-issues" ]]; then
-    REPO=$(sunbeam query -r '.params.repo')
+    REPO=$(echo "$1" | sunbeam query -r '.params.repo')
 
     gh issue list --repo "$REPO" --json author,title,url,number | sunbeam query '[ .[] |
     {
@@ -89,11 +94,13 @@ elif [[ $COMMAND == "list-issues" ]]; then
         actions: [
             {
                 title: "Open in Browser",
-                onAction: {type: "open", target: .url}
+                type: "open",
+                target: .url
             },
             {
                 title: "Copy URL",
-                onAction: {type: "copy", text: .url}
+                type: "copy",
+                text: .url
             }
         ]
     }

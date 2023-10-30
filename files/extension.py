@@ -10,7 +10,7 @@ if len(sys.argv) == 1:
                 {
                     "name": "ls",
                     "title": "List files",
-                    "mode": "view",
+                    "mode": "page",
                     "params": [
                         {"name": "dir", "type": "string"},
                         {"name": "show-hidden", "type": "boolean"},
@@ -23,12 +23,10 @@ if len(sys.argv) == 1:
     )
     sys.exit(0)
 
-
-if sys.argv[1] == "ls":
-    payload = json.load(sys.stdin)
-    work_dir = payload["cwd"]
-    params = payload.get("params", {})
-    root = pathlib.Path(params.get("dir", work_dir))
+input = json.loads(sys.argv[1])
+if input["command"] == "ls":
+    params = input["params"]
+    root = pathlib.Path(params.get("dir", "."))
     show_hidden = params.get("show-hidden", False)
 
     items = []
@@ -45,12 +43,10 @@ if sys.argv[1] == "ls":
             item["actions"].append(
                 {
                     "title": "Browse",
-                    "onAction": {
-                        "type": "run",
-                        "command": "ls",
-                        "params": {
-                            "dir": str(file.absolute()),
-                        },
+                    "type": "run",
+                    "command": "ls",
+                    "params": {
+                        "dir": str(file.absolute()),
                     },
                 }
             )
@@ -59,21 +55,17 @@ if sys.argv[1] == "ls":
                 {
                     "title": "Open",
                     "key": "o",
-                    "onAction": {
-                        "type": "open",
-                        "target": str(file.absolute()),
-                        "exit": True,
-                    },
+                    "type": "open",
+                    "target": str(file.absolute()),
+                    "exit": True,
                 },
                 {
                     "title": "Show Hidden Files" if not show_hidden else "Hide Hidden Files",
                     "key": "h",
-                    "onAction": {
-                        "type": "reload",
-                        "params": {
-                            "show-hidden": not show_hidden,
-                            "dir": str(root.absolute()),
-                        },
+                    "type": "reload",
+                    "params": {
+                        "show-hidden": not show_hidden,
+                        "dir": str(root.absolute()),
                     },
                 },
             ]

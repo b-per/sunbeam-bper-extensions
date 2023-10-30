@@ -2,16 +2,16 @@
 
 set -eo pipefail
 
-COMMAND="$1"
+COMMAND=$(echo "$1" | jq -r '.command')
 PROVIDERS='["dbt-labs/dbtcloud", "GtheSheep/dbt-cloud", "fivetran/fivetran", "Snowflake-Labs/snowflake", "databricks/databricks", "integrations/github"]'
 
 if [ $# -eq 0 ]; then
 /Users/bper/dev/sunbeam-main/sunbeam query -n '{
     title: "TF",
     commands: [
-        {name: "list-providers", mode: "view", title: "List Providers"},
-        {name: "list-releases", mode: "view", title: "List Releases", params: [{name: "provider", type: "string", required: true}]},
-        {name: "show-details", mode: "view", title: "Show Details", params: [{name: "id", type: "string", required: true}, {name: "version", type: "string", required: true}]}
+        {name: "list-providers", mode: "page", title: "List Providers"},
+        {name: "list-releases", mode: "page", title: "List Releases", params: [{name: "provider", type: "string", required: true}]},
+        {name: "show-details", mode: "page", title: "Show Details", params: [{name: "id", type: "string", required: true}, {name: "version", type: "string", required: true}]}
     ]
 }'
 exit 0
@@ -27,11 +27,9 @@ if [[ $COMMAND == "list-providers" ]]; then
             title: .,
             actions: [{
             title: "List releases",
-            onAction: {
-                type: "run",
-                command: "list-releases",
-                params: { provider: . }
-            }
+            type: "run",
+            command: "list-releases",
+            params: { provider: . }
             }]
         })
         }'
@@ -39,7 +37,7 @@ if [[ $COMMAND == "list-providers" ]]; then
 
 elif [[ $COMMAND == "list-releases" ]]; then
 
-    PROVIDER=$(sunbeam query -r '.params.provider')
+    PROVIDER=$(echo "$1" | sunbeam query -r '.params.provider')
     versions=$(curl "https://registry.terraform.io/v2/providers/${PROVIDER}?include=categories,moved-to,potential-fork-of,provider-versions,top-modules&include=categories%2Cmoved-to%2Cpotential-fork-of%2Cprovider-versions%2Ctop-modules")
 
     ID=$(echo $versions | jq -r '.data.id')
@@ -56,19 +54,15 @@ elif [[ $COMMAND == "list-releases" ]]; then
             actions: [
                 {
                     title: "Download details",
-                    onAction: {
-                        type: "run",
-                        command: "show-details",
-                        params: { id: $id, version: (.attributes.version // "") }
-                    }
+                    type: "run",
+                    command: "show-details",
+                    params: { id: $id, version: (.attributes.version // "") }
                 },
                 {
                     title: "Open in Browser",
                     key: "o",
-                    onAction: {
-                        type: "open",
-                        target: ("https://registry.terraform.io/providers/" + $provider + "/" + (.attributes.version // ""))
-                    }
+                    type: "open",
+                    target: ("https://registry.terraform.io/providers/" + $provider + "/" + (.attributes.version // ""))
                 }
             ]
             }))
@@ -78,7 +72,7 @@ elif [[ $COMMAND == "list-releases" ]]; then
 
 elif [[ $COMMAND == "show-details" ]]; then
 
-    PARAMS=$(sunbeam query '.params')
+    PARAMS=$(echo "$1" | sunbeam query '.params')
     ID=$(echo $PARAMS | sunbeam query -r '.id')
     VERSION=$(echo $PARAMS | sunbeam query -r '.version')
 
