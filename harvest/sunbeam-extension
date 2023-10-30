@@ -8,13 +8,15 @@ if [ $# -eq 0 ]; then
 {
     title: "Harvest",
     commands: [
-        { name: "list-projects", mode: "view", title: "List Projects" }
+        { name: "list-projects", mode: "page", title: "List Projects" },
+        { name: "detail-project", mode: "page", title: "Detail Project", params: [{ name: "project_id", type: "string" }]}
     ]
 }'
 exit 0
 fi
 
-COMMAND="${1}"
+# COMMAND="${1}"
+COMMAND=$(echo "$1" | jq -r '.command')
 if [[ $COMMAND == "list-projects" ]]; then
     timesheets=$(curl -s --request GET \
     --url "https://api.harvestapp.com/api/v2/time_entries?user_id=${SB_HARVEST_USERID}&from=2022-01-01" \
@@ -35,28 +37,58 @@ if [[ $COMMAND == "list-projects" ]]; then
         actions: [
             {
                 title: "Open Harvest",
-                onAction: {
-                    type: "open",
-                    target: .url
-                }
+                type: "open",
+                target: .url
             },
             {
                 title: "Add Time",
                 key: "a",
-                onAction: {
-                    type: "open",
-                    target: "'$SB_HARVEST_URL'/time/week"
-                }
+                type: "open",
+                target: "'$SB_HARVEST_URL'/time/week"
             },
             {
                 title: "Copy Hours",
                 key: "l",
-                onAction: {
-                    type: "copy",
-                    text: .hours | tostring
-                }
+                type: "copy",
+                text: .hours | tostring
+            },
+            {
+                title: "Details",
+                key: "d",
+                type: "run",
+                command: "detail-project",
+                params: {project_id: .project_id}
             }
         ]
     }
     ] | {"type": "list", "title" : "Harvest", "items" : . }'
+    exit 0
+fi
+
+
+if [[ $COMMAND == "detail-project" ]]; then
+
+    PROJECT_ID=$(echo "$1" | sunbeam query -r '.params.project_id')
+
+    details=$(curl -s --request GET \
+    --url "https://api.harvestapp.com/api/v2/time_entries?project_id=${PROJECT_ID}" \
+    --header "authorization: Bearer ${SB_HARVEST_TOKEN}" \
+    --header "harvest-account-id: ${SB_HARVEST_ACCOUNT}")
+
+    parsed_details=$(echo $details | sunbeam query '[
+        .time_entries[]
+        | {task_name: .task.name, user_name: .user.name, billable: .billable, hours: .hours}
+    ] | group_by(.task_name, .user_name, .billable)
+    | map({
+        task: [.[0].task_name, .[0].user_name , if .[0].billable then "Billable" else "Non Billable" end] | join(" - "),
+        total_hours: map(.hours) | add
+    })')
+
+    echo $parsed_details | sunbeam query '[ .[] |
+    {
+        title: .task,
+        subtitle: .total_hours | tostring,
+    }
+    ] | {"type": "list", "title" : "Harvest", "items" : . }'
+    exit 0
 fi
