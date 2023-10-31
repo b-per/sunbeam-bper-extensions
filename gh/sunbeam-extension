@@ -15,9 +15,9 @@ if [ $# -eq 0 ]; then
 {
     title: "GitHub",
     commands: [
-        { name: "list-repos", mode: "page", title: "List Repos" },
-        { name: "list-issues", mode: "page", title: "List Issue", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] },
-        { name: "list-prs", mode: "page", title: "List PRs", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] }
+        { name: "list-repos", mode: "list", title: "List Repos" },
+        { name: "list-issues", mode: "list", title: "List Issue", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] },
+        { name: "list-prs", mode: "list", title: "List PRs", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] }
     ]
 }'
 exit 0
@@ -54,7 +54,7 @@ if [[ $COMMAND == "list-repos" ]]; then
                 }
             ]
         }
-    ] | {"type": "list", "title" : "List Repositories", "items" : .}'
+    ] | {"title" : "List Repositories", "items" : .}'
     exit 0
 elif [[ $COMMAND == "list-prs" ]]; then
     REPO=$(echo "$1" | sunbeam query -r '.params.repo')
@@ -79,7 +79,7 @@ elif [[ $COMMAND == "list-prs" ]]; then
             }
         ]
     }
-    ] | {"type": "list", "title" : "List Pull Requests", "items" : .}'
+    ] | {"title" : "List Pull Requests", "items" : .}'
     exit 0
 elif [[ $COMMAND == "list-issues" ]]; then
     REPO=$(echo "$1" | sunbeam query -r '.params.repo')
@@ -104,6 +104,6 @@ elif [[ $COMMAND == "list-issues" ]]; then
             }
         ]
     }
-    ] | {"type": "list", "title" : "List Issue", "items" : . }'
+    ] | {"title" : "List Issue", "items" : . }'
     exit 0
 fi
