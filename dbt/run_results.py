@@ -6,6 +6,8 @@ import yaml
 
 
 def execute(dir, include_packages):
+    # print(dir)
+    # exit(0)
     run_results_file_path = dir / Path("target/run_results.json")
     run_results = json.loads(run_results_file_path.read_text())
 
@@ -70,10 +72,8 @@ def execute(dir, include_packages):
             {
                 "title": "Copy Name",
                 "key": "y",
-                "onAction": {
-                    "type": "copy",
-                    "text": result["unique_id"].split(".")[-1],
-                },
+                "type": "copy",
+                "text": result["unique_id"].split(".")[-1],
             }
         )
 
@@ -82,10 +82,8 @@ def execute(dir, include_packages):
                 {
                     "title": "Open file",
                     "key": "o",
-                    "onAction": {
-                        "type": "open",
-                        "target": manifest["nodes"][result["unique_id"]]["original_file_path"],
-                    },
+                    "type": "open",
+                    "target": manifest["nodes"][result["unique_id"]]["original_file_path"],
                 }
             )
 
@@ -95,10 +93,8 @@ def execute(dir, include_packages):
                 {
                     "title": "Open compiled code",
                     "key": "c",
-                    "onAction": {
-                        "type": "open",
-                        "target": manifest["nodes"][result["unique_id"]]["compiled_path"],
-                    },
+                    "type": "open",
+                    "target": manifest["nodes"][result["unique_id"]]["compiled_path"],
                 }
             )
 
@@ -110,10 +106,8 @@ def execute(dir, include_packages):
                     {
                         "title": "Open YAML",
                         "key": "c",
-                        "onAction": {
-                            "type": "open",
-                            "target": yml_file,
-                        },
+                        "type": "open",
+                        "target": yml_file,
                     }
                 )
 
@@ -121,51 +115,35 @@ def execute(dir, include_packages):
             {
                 "title": "See details",
                 "key": "d",
-                "onAction": {
-                    "type": "run",
-                    "command": "node-details",
-                    "params": {"filter": result["unique_id"]},
-                },
+                "type": "run",
+                "command": "node-details",
+                "params": {"filter": result["unique_id"]},
             }
         )
         actions.append(
             {
                 "title": "Toggle packages",
-                "onAction": {
-                    "type": "run",
-                    "command": "run-results",
-                    "params": {"include-packages": not include_packages},
-                },
+                "type": "run",
+                "command": "run-results",
+                "params": {"include-packages": not include_packages},
             }
         )
 
         row["actions"] = actions
         list_rows.append(row)
 
-    if not list_rows:
-        json.dump(
-            {
-                "type": "detail",
-                "markdown": "No models run",
-                "actions": [
-                    {
-                        "title": "Toggle packages",
-                        "onAction": {
-                            "type": "run",
-                            "command": "run-results",
-                            "params": {"include-packages": not include_packages},
-                        },
-                    }
-                ],
-            },
-            sys.stdout,
-        )
-        return
-
     json.dump(
         {
-            "type": "list",
             "items": list_rows,
+            "emptyText": "No models run",
+            "actions": [
+                {
+                    "title": "Toggle packages",
+                    "type": "run",
+                    "command": "run-results",
+                    "params": {"include-packages": not include_packages},
+                }
+            ],
         },
         sys.stdout,
     )

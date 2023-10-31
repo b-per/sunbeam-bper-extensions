@@ -1,6 +1,5 @@
 #! /bin/bash
 
-# SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source ~/.sunbeamrc
 
 if [ $# -eq 0 ]; then
@@ -8,14 +7,13 @@ if [ $# -eq 0 ]; then
 {
     title: "Harvest",
     commands: [
-        { name: "list-projects", mode: "page", title: "List Projects" },
-        { name: "detail-project", mode: "page", title: "Detail Project", params: [{ name: "project_id", type: "string" }]}
+        { name: "list-projects", mode: "list", title: "List Projects" },
+        { name: "detail-project", mode: "list", title: "Detail Project", params: [{ name: "project_id", type: "string", required: true }]}
     ]
 }'
 exit 0
 fi
 
-# COMMAND="${1}"
 COMMAND=$(echo "$1" | jq -r '.command')
 if [[ $COMMAND == "list-projects" ]]; then
     timesheets=$(curl -s --request GET \
@@ -61,7 +59,7 @@ if [[ $COMMAND == "list-projects" ]]; then
             }
         ]
     }
-    ] | {"type": "list", "title" : "Harvest", "items" : . }'
+    ] | { "title" : "Harvest", "items" : . }'
     exit 0
 fi
 
@@ -89,6 +87,6 @@ if [[ $COMMAND == "detail-project" ]]; then
         title: .task,
         subtitle: .total_hours | tostring,
     }
-    ] | {"type": "list", "title" : "Harvest", "items" : . }'
+    ] | { "title" : "Harvest", "items" : . }'
     exit 0
 fi

@@ -13,12 +13,12 @@ from pathlib import Path
 
 """
 10:03:09  1 of 10 START sql table model hyrule.source_quests  [RUN]
+10:03:19  1 of 10 OK created sql table model hyrule.source_quests  [SELECT in 10.78s]
 10:03:09  2 of 10 START sql table model hyrule.source_fairies  [RUN]
 10:03:09  3 of 10 START sql table model hyrule.source_rupees  [RUN]
 10:03:09  4 of 10 START sql table model hyrule.source_rewards  [RUN]
 10:03:09  5 of 10 START sql table model hyrule.dim_fairies  [RUN]
 10:03:09  6 of 10 START sql table model hyrule.fct_quests  [RUN]
-10:03:19  1 of 10 OK created sql table model hyrule.source_quests  [SELECT in 10.78s]
 10:03:19  7 of 10 START sql table model hyrule.fct_rupees  [RUN]
 10:03:23  2 of 10 OK created sql table model hyrule.source_fairies  [SELECT in 14.44s]
 10:03:23  8 of 10 START sql table model hyrule.mart_weekly_quests  [RUN]
@@ -130,11 +130,28 @@ def execute(input_type, dir="."):
         model for model in log_lines if model.model_num in model_nums_not_finished
     ]
 
-    if len(models_not_finished) > 0:
+    if len(log_lines) > 0:
+        message = "All models finished! 🎉"
+    else:
+        if input_type == "paste":
+            message = "No valid logs were parsed, get the logs in your clipboard and try again."
+        if input_type == "file":
+            message = "No valid logs were parsed, is dbt tee-ing to `dbt.stdout`? \n\n If it is, dbt might still be warming up!"
+
+    if len(models_not_finished) > -1:
         json.dump(
             {
-                "type": "list",
                 "title": "Models Not Finished 🦈",
+                "emptyText": message,
+                "actions": [
+                    {
+                        "title": "Refresh",
+                        "type": "run",
+                        "command": "running-models-file",
+                    },
+                ]
+                if input_type == "file"
+                else [],
                 "items": [
                     {
                         "title": f"{model.model_num} - {model.model_name}",
@@ -144,26 +161,15 @@ def execute(input_type, dir="."):
                             for action in [
                                 {
                                     "title": "Refresh",
-                                    "onAction": {
-                                        "type": "run",
-                                        "command": "running-models-file",
-                                    },
+                                    "type": "run",
+                                    "command": "running-models-file",
                                 }
                                 if input_type == "file"
                                 else None,
                                 {
                                     "title": "Copy Name",
-                                    "onAction": {
-                                        "type": "copy",
-                                        "text": model.model_name.split(".")[-1],
-                                    },
-                                },
-                                {
-                                    "title": "Refresh",
-                                    "onAction": {
-                                        "type": "run",
-                                        "command": "running-models-file",
-                                    },
+                                    "type": "copy",
+                                    "text": model.model_name.split(".")[-1],
                                 },
                             ]
                             if action is not None

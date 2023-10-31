@@ -14,7 +14,7 @@ if len(sys.argv) == 1:
                 {
                     "name": "run-results",
                     "title": "List models run",
-                    "mode": "view",
+                    "mode": "list",
                     "params": [
                         {"name": "include-packages", "type": "boolean"},
                     ],
@@ -22,7 +22,7 @@ if len(sys.argv) == 1:
                 {
                     "name": "node-details",
                     "title": "List details for a node",
-                    "mode": "view",
+                    "mode": "detail",
                     "params": [
                         {"name": "filter", "type": "string", "required": True},
                     ],
@@ -30,15 +30,15 @@ if len(sys.argv) == 1:
                 {
                     "name": "running-models-paste",
                     "title": "List running models (Paste logs)",
-                    "mode": "view",
+                    "mode": "list",
                     "params": [
-                        {"name": "fil", "type": "boolean"},
+                        {"name": "file", "type": "boolean"},
                     ],
                 },
                 {
                     "name": "running-models-file",
                     "title": "List running models (Read logs from file)",
-                    "mode": "view",
+                    "mode": "list",
                     "params": [
                         {"name": "dir", "type": "string"},
                         {"name": "show-hidden", "type": "boolean"},
@@ -51,26 +51,23 @@ if len(sys.argv) == 1:
     )
     sys.exit(0)
 
-if sys.argv[1] == "run-results":
-    payload = json.load(sys.stdin)
-    work_dir = payload["cwd"]
+payload = json.loads(sys.argv[1])
+
+if payload["command"] == "run-results":
+    work_dir = "."
     incl_packages = (
         payload["params"]["include-packages"] if "include-packages" in payload["params"] else False
     )
     run_results.execute(dir=work_dir, include_packages=incl_packages)
 
-if sys.argv[1] == "node-details":
-    payload = json.load(sys.stdin)
-    work_dir = payload["cwd"]
+if payload["command"] == "node-details":
+    work_dir = "."
     filter = payload["params"]["filter"]
     node_details.execute(dir=work_dir, filter=filter)
 
-if sys.argv[1] == "running-models-paste":
-    payload = json.load(sys.stdin)
-    work_dir = payload["cwd"]
+if payload["command"] == "running-models-paste":
     running_models.execute(input_type="paste")
 
-if sys.argv[1] == "running-models-file":
-    payload = json.load(sys.stdin)
-    work_dir = payload["cwd"]
+if payload["command"] == "running-models-file":
+    work_dir = "."
     running_models.execute(input_type="file", dir=work_dir)

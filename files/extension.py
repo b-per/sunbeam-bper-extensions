@@ -10,7 +10,7 @@ if len(sys.argv) == 1:
                 {
                     "name": "ls",
                     "title": "List files",
-                    "mode": "page",
+                    "mode": "list",
                     "params": [
                         {"name": "dir", "type": "string"},
                         {"name": "show-hidden", "type": "boolean"},
@@ -26,6 +26,7 @@ if len(sys.argv) == 1:
 input = json.loads(sys.argv[1])
 if input["command"] == "ls":
     params = input["params"]
+    # TODO: Fix the current directory
     root = pathlib.Path(params.get("dir", "."))
     show_hidden = params.get("show-hidden", False)
 
@@ -75,7 +76,6 @@ if input["command"] == "ls":
 
     json.dump(
         {
-            "type": "list",
             "items": items,
         },
         sys.stdout,

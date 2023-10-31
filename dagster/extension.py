@@ -14,12 +14,12 @@ if len(sys.argv) == 1:
                 {
                     "name": "list-assets",
                     "title": "List Assets",
-                    "mode": "page",
+                    "mode": "list",
                 },
                 {
                     "name": "last-mater-single-asset",
                     "title": "Last Materializations for the asset",
-                    "mode": "page",
+                    "mode": "list",
                     "params": [
                         {"name": "filter", "type": "string", "required": True},
                     ],
@@ -27,7 +27,7 @@ if len(sys.argv) == 1:
                 {
                     "name": "plot-asset-mater",
                     "title": "Plot Materialization time for the asset",
-                    "mode": "page",
+                    "mode": "detail",
                     "params": [
                         {"name": "filter", "type": "string", "required": True},
                     ],
@@ -35,7 +35,7 @@ if len(sys.argv) == 1:
                 {
                     "name": "list-runs",
                     "title": "Last Runs in Dagster",
-                    "mode": "page",
+                    "mode": "list",
                 },
             ],
         },

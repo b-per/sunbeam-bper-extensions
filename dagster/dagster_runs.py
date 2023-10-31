@@ -44,7 +44,6 @@ def execute():
 
     ret = {
         "title": "Last runs",
-        "type": "list",
         "items": [
             {
                 "title": ("✅ " if job_result["status"] == "SUCCESS" else "❌ ")

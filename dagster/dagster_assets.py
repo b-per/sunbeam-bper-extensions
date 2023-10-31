@@ -42,7 +42,6 @@ def execute(command, filter=None):
 
         ret = {
             "title": "Last materializations",
-            "type": "list",
             "items": [
                 {
                     "title": ".".join(asset_mater["key"]["path"]),
@@ -68,8 +67,6 @@ def execute(command, filter=None):
                         },
                     ],
                 }
-                # ],
-                # }
                 for asset_mater in response["data"]["assetsOrError"]["nodes"]
             ],
         }
@@ -120,7 +117,6 @@ def execute(command, filter=None):
 
         ret = {
             "title": f"Last materializations for {filter}",
-            "type": "list",
             "items": [
                 {
                     "title": ("✅ " if asset_mater["stepStats"]["status"] == "SUCCESS" else "❌ ")
@@ -217,7 +213,6 @@ def execute(command, filter=None):
 
         ret = {
             "title": f"Last materializations for {filter}",
-            "type": "detail",
             "text": f"{plot([myy], config)}",
         }
 

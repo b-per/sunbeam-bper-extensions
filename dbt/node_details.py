@@ -53,7 +53,7 @@ Tests:
 {newline.join(tests_to_print) if tests_to_print else "  - None"}
 """
 
-        ret = {"title": "Model details", "type": "detail", "markdown": details}
+        ret = {"title": "Model details", "text": details}
 
     elif node["resource_type"] == "test":
         details = f"""
@@ -64,7 +64,7 @@ Config:
   - Schema: {node_config["schema"]}
 """
 
-        ret = {"title": "Test details", "type": "detail", "markdown": details}
+        ret = {"title": "Test details", "text": details}
 
     json.dump(
         ret,

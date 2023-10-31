@@ -9,9 +9,9 @@ if [ $# -eq 0 ]; then
 /Users/bper/dev/sunbeam-main/sunbeam query -n '{
     title: "TF",
     commands: [
-        {name: "list-providers", mode: "page", title: "List Providers"},
-        {name: "list-releases", mode: "page", title: "List Releases", params: [{name: "provider", type: "string", required: true}]},
-        {name: "show-details", mode: "page", title: "Show Details", params: [{name: "id", type: "string", required: true}, {name: "version", type: "string", required: true}]}
+        {name: "list-providers", mode: "list", title: "List Providers"},
+        {name: "list-releases", mode: "list", title: "List Releases", params: [{name: "provider", type: "string", required: true}]},
+        {name: "show-details", mode: "list", title: "Show Details", params: [{name: "id", type: "string", required: true}, {name: "version", type: "string", required: true}]}
     ]
 }'
 exit 0
@@ -22,14 +22,13 @@ if [[ $COMMAND == "list-providers" ]]; then
 
     echo $PROVIDERS |  /Users/bper/dev/sunbeam-main/sunbeam query --arg "command=$0" '
         {
-        type: "list",
         items: map({
             title: .,
             actions: [{
-            title: "List releases",
-            type: "run",
-            command: "list-releases",
-            params: { provider: . }
+                title: "List releases",
+                type: "run",
+                command: "list-releases",
+                params: { provider: . }
             }]
         })
         }'
@@ -44,7 +43,6 @@ elif [[ $COMMAND == "list-releases" ]]; then
 
     echo $versions |  /Users/bper/dev/sunbeam-main/sunbeam query --arg "command=$0" --arg "provider=${PROVIDER}"  --arg "id=${ID}" '
         {
-        type: "list",
         title: "List of releases",
         items:
             (.included | sort_by(.attributes["published-at"]) | reverse | map({
@@ -80,7 +78,6 @@ elif [[ $COMMAND == "show-details" ]]; then
 
     echo $details | /Users/bper/dev/sunbeam-main/sunbeam query '
         {
-            type: "list",
             items: [
                 {
                     title: "This week",
