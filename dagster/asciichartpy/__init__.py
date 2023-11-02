@@ -52,6 +52,7 @@ __all__ = [
     "reset",
 ]
 
+
 # Python 3.2 has math.isfinite, which could have been used, but to support older
 # versions, this little helper is shorter than having to keep doing not isnan(),
 # plus the double-negative of "not is not a number" is confusing, so this should
@@ -193,7 +194,6 @@ def plot(series, cfg=None):
         result[rows - scaled(d0)][offset - 1] = symbols[0]
 
     for i in range(0, len(series)):
-
         color = colors[i % len(colors)]
 
         # plot the line

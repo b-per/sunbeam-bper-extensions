@@ -2,13 +2,9 @@
 
 # using urllib to not require requests
 import json
-from datetime import datetime
-import math
-import os
 import common
 from common import Requests, ts_to_datetime, run_duration
 
-import asciichartpy as asciichart
 from asciichartpyx import plot
 
 DAGSTER_URL = common.DAGSTER_URL
