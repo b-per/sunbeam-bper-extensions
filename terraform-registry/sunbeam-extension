@@ -43,7 +43,6 @@ elif [[ $COMMAND == "list-releases" ]]; then
 
     echo $versions |  /Users/bper/dev/sunbeam-main/sunbeam query --arg "command=$0" --arg "provider=${PROVIDER}"  --arg "id=${ID}" '
         {
-        title: "List of releases",
         items:
             (.included | sort_by(.attributes["published-at"]) | reverse | map({
             title: (.attributes.version // "ALL"),

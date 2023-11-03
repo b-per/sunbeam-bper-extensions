@@ -54,7 +54,7 @@ if [[ $COMMAND == "list-repos" ]]; then
                 }
             ]
         }
-    ] | {"title" : "List Repositories", "items" : .}'
+    ] | { "items" : .}'
     exit 0
 elif [[ $COMMAND == "list-prs" ]]; then
     REPO=$(echo "$1" | sunbeam query -r '.params.repo')
@@ -79,7 +79,7 @@ elif [[ $COMMAND == "list-prs" ]]; then
             }
         ]
     }
-    ] | {"title" : "List Pull Requests", "items" : .}'
+    ] | { "items" : .}'
     exit 0
 elif [[ $COMMAND == "list-issues" ]]; then
     REPO=$(echo "$1" | sunbeam query -r '.params.repo')
@@ -104,6 +104,6 @@ elif [[ $COMMAND == "list-issues" ]]; then
             }
         ]
     }
-    ] | {"title" : "List Issue", "items" : . }'
+    ] | { "items" : . }'
     exit 0
 fi

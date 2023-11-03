@@ -37,7 +37,6 @@ def execute(command, filter=None):
         )
 
         ret = {
-            "title": "Last materializations",
             "items": [
                 {
                     "title": ".".join(asset_mater["key"]["path"]),
@@ -112,7 +111,6 @@ def execute(command, filter=None):
         )
 
         ret = {
-            "title": f"Last materializations for {filter}",
             "items": [
                 {
                     "title": ("✅ " if asset_mater["stepStats"]["status"] == "SUCCESS" else "❌ ")
@@ -207,9 +205,6 @@ def execute(command, filter=None):
             "format": "{:4.0f}",
         }
 
-        ret = {
-            "title": f"Last materializations for {filter}",
-            "text": f"{plot([myy], config)}",
-        }
+        ret = {"text": f"{plot([myy], config)}", "highlight": "ansi"}
 
         print(json.dumps(ret, indent=2))

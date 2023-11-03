@@ -1,7 +1,6 @@
 #!/usr/bin/env /Users/bper/miniconda3/bin/python
 
 import json
-from datetime import datetime
 
 import common
 from common import Requests, ts_to_datetime
@@ -43,7 +42,6 @@ def execute():
     )
 
     ret = {
-        "title": "Last runs",
         "items": [
             {
                 "title": ("✅ " if job_result["status"] == "SUCCESS" else "❌ ")

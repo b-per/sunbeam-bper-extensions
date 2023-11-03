@@ -118,7 +118,7 @@ def execute(input_type, dir="."):
     for line in input:
         try:
             log_lines.append(LogLine(*line.split()))
-        except:
+        except:  # noqa E722
             continue
 
     counter_models = Counter([line.model_num for line in log_lines])
@@ -141,7 +141,6 @@ def execute(input_type, dir="."):
     if len(models_not_finished) > -1:
         json.dump(
             {
-                "title": "Models Not Finished 🦈",
                 "emptyText": message,
                 "actions": [
                     {

@@ -59,7 +59,7 @@ if [[ $COMMAND == "list-projects" ]]; then
             }
         ]
     }
-    ] | { "title" : "Harvest", "items" : . }'
+    ] | { "items" : . }'
     exit 0
 fi
 
@@ -87,6 +87,6 @@ if [[ $COMMAND == "detail-project" ]]; then
         title: .task,
         subtitle: .total_hours | tostring,
     }
-    ] | { "title" : "Harvest", "items" : . }'
+    ] | { "items" : . }'
     exit 0
 fi

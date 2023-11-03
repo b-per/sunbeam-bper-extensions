@@ -1,7 +1,6 @@
 import json
 import sys
 from pathlib import Path
-from datetime import datetime
 
 
 def execute(dir, filter):
@@ -64,7 +63,7 @@ Config:
   - Schema: {node_config["schema"]}
 """
 
-        ret = {"title": "Test details", "text": details}
+        ret = {"text": details}
 
     json.dump(
         ret,
