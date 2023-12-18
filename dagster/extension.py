@@ -1,6 +1,5 @@
 import sys
 import json
-import pathlib
 
 import dagster_assets
 import dagster_runs
@@ -14,28 +13,30 @@ if len(sys.argv) == 1:
                 {
                     "name": "list-assets",
                     "title": "List Assets",
-                    "mode": "list",
+                    "mode": "filter",
                 },
                 {
                     "name": "last-mater-single-asset",
                     "title": "Last Materializations for the asset",
-                    "mode": "list",
+                    "mode": "filter",
+                    "hidden": True,
                     "params": [
-                        {"name": "filter", "type": "string", "required": True},
+                        {"title": "Filter", "name": "filter", "type": "text", "required": True},
                     ],
                 },
                 {
                     "name": "plot-asset-mater",
                     "title": "Plot Materialization time for the asset",
                     "mode": "detail",
+                    "hidden": True,
                     "params": [
-                        {"name": "filter", "type": "string", "required": True},
+                        {"title": "Filter", "name": "filter", "type": "text", "required": True},
                     ],
                 },
                 {
                     "name": "list-runs",
                     "title": "Last Runs in Dagster",
-                    "mode": "list",
+                    "mode": "filter",
                 },
             ],
         },

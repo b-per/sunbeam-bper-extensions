@@ -83,7 +83,7 @@ def execute(dir, include_packages):
                     "title": "Open file",
                     "key": "o",
                     "type": "open",
-                    "target": manifest["nodes"][result["unique_id"]]["original_file_path"],
+                    "path": manifest["nodes"][result["unique_id"]]["original_file_path"],
                 }
             )
 
@@ -94,7 +94,7 @@ def execute(dir, include_packages):
                     "title": "Open compiled code",
                     "key": "c",
                     "type": "open",
-                    "target": manifest["nodes"][result["unique_id"]]["compiled_path"],
+                    "path": manifest["nodes"][result["unique_id"]]["compiled_path"],
                 }
             )
 
@@ -107,7 +107,7 @@ def execute(dir, include_packages):
                         "title": "Open YAML",
                         "key": "c",
                         "type": "open",
-                        "target": yml_file,
+                        "path": yml_file,
                     }
                 )
 

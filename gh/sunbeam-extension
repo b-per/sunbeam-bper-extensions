@@ -11,13 +11,13 @@ alias sunbeam='/Users/bper/dev/sunbeam-main/sunbeam'
 
 # if no arguments are passed, return the extension's manifest
 if [ $# -eq 0 ]; then
-    sunbeam query -n '
+    jq -n '
 {
     title: "GitHub",
     commands: [
-        { name: "list-repos", mode: "list", title: "List Repos" },
-        { name: "list-issues", mode: "list", title: "List Issue", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] },
-        { name: "list-prs", mode: "list", title: "List PRs", params: [{ name: "repo", type: "string", required: true, description: "the repository to search for" }] }
+        { name: "list-repos", mode: "filter", title: "List Repos" },
+        { name: "list-issues", mode: "filter", title: "List Issue", params: [{ title: "Repo", name: "repo", type: "text", required: true, description: "the repository to search for" }] },
+        { name: "list-prs", mode: "filter", title: "List PRs", params: [{ title: "Repo", name: "repo", type: "text", required: true, description: "the repository to search for" }] }
     ]
 }'
 exit 0
@@ -25,7 +25,7 @@ fi
 
 if [[ $COMMAND == "list-repos" ]]; then
     # shellcheck disable=SC2016
-    gh api "/user/repos?sort=updated&per_page=100" | sunbeam query --arg "command=$0" '[ .[] |
+    gh api "/user/repos?sort=updated&per_page=100" | jq --arg command "$0" '[ .[] |
         {
             title: .name,
             subtitle: (.description // ""),
@@ -36,7 +36,7 @@ if [[ $COMMAND == "list-repos" ]]; then
                 {
                     title: "Open",
                     type: "open",
-                    target: .html_url
+                    url: .html_url
                 },
                 {
                     title: "List Pull Requests",
@@ -57,9 +57,9 @@ if [[ $COMMAND == "list-repos" ]]; then
     ] | { "items" : .}'
     exit 0
 elif [[ $COMMAND == "list-prs" ]]; then
-    REPO=$(echo "$1" | sunbeam query -r '.params.repo')
+    REPO=$(echo "$1" | jq -r '.params.repo')
 
-    gh pr list --repo "$REPO" --json author,title,url,number | sunbeam query '[ .[] |
+    gh pr list --repo "$REPO" --json author,title,url,number | jq '[ .[] |
     {
         title: .title,
         subtitle: .author.login,
@@ -70,7 +70,7 @@ elif [[ $COMMAND == "list-prs" ]]; then
             {
                 title: "Open in Browser",
                 type: "open",
-                target: .url
+                url: .url
             },
             {
                 title: "Copy URL",
@@ -82,9 +82,9 @@ elif [[ $COMMAND == "list-prs" ]]; then
     ] | { "items" : .}'
     exit 0
 elif [[ $COMMAND == "list-issues" ]]; then
-    REPO=$(echo "$1" | sunbeam query -r '.params.repo')
+    REPO=$(echo "$1" | jq -r '.params.repo')
 
-    gh issue list --repo "$REPO" --json author,title,url,number | sunbeam query '[ .[] |
+    gh issue list --repo "$REPO" --json author,title,url,number | jq '[ .[] |
     {
         title: .title,
         subtitle: .author.login,
@@ -95,7 +95,7 @@ elif [[ $COMMAND == "list-issues" ]]; then
             {
                 title: "Open in Browser",
                 type: "open",
-                target: .url
+                url: .url
             },
             {
                 title: "Copy URL",

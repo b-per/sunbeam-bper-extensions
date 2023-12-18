@@ -125,7 +125,7 @@ def execute(command, filter=None):
                             "title": "Check run on Dagster",
                             "key": "m",
                             "type": "open",
-                            "target": f"""{DAGSTER_URL}/runs/{asset_mater["runId"]}""",
+                            "url": f"""{DAGSTER_URL}/runs/{asset_mater["runId"]}""",
                         },
                         {
                             "title": "Copy URL",

@@ -10,10 +10,15 @@ if len(sys.argv) == 1:
                 {
                     "name": "ls",
                     "title": "List files",
-                    "mode": "list",
+                    "mode": "filter",
                     "params": [
-                        {"name": "dir", "type": "string"},
-                        {"name": "show-hidden", "type": "boolean"},
+                        {"title": "Directory", "name": "dir", "type": "text", "optional": True},
+                        {
+                            "title": "Show hidden",
+                            "name": "show-hidden",
+                            "type": "text",
+                            "optional": True,
+                        },
                     ],
                 }
             ],
@@ -26,8 +31,13 @@ if len(sys.argv) == 1:
 input = json.loads(sys.argv[1])
 if input["command"] == "ls":
     params = input["params"]
+
+    # print(params)
+    # exit(0)
+
     # TODO: Fix the current directory
-    root = pathlib.Path(params.get("dir", "."))
+    dir = params["dir"] or input["cwd"]
+    root = pathlib.Path(dir)
     show_hidden = params.get("show-hidden", False)
 
     items = []

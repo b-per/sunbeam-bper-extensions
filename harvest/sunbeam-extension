@@ -3,12 +3,12 @@
 source ~/.sunbeamrc
 
 if [ $# -eq 0 ]; then
-    sunbeam query -n '
+    jq -n '
 {
     title: "Harvest",
     commands: [
-        { name: "list-projects", mode: "list", title: "List Projects" },
-        { name: "detail-project", mode: "list", title: "Detail Project", params: [{ name: "project_id", type: "string", required: true }]}
+        { name: "list-projects", mode: "filter", title: "List Projects" },
+        { name: "detail-project", mode: "filter", title: "Detail Project", hidden: true, params: [{ title:"Project ID", name: "project_id", type: "text", required: true }]}
     ]
 }'
 exit 0
@@ -22,27 +22,27 @@ if [[ $COMMAND == "list-projects" ]]; then
     --header "harvest-account-id: ${SB_HARVEST_ACCOUNT}" | jq '[.time_entries[] | select(.billable == true)] | group_by(.project.id)  | map({project_id: first.project.id | tostring, hours: (map(.hours) | add)})')
 
     projects=$(curl -s --request GET \
-    --url https://api.harvestapp.com/api/v2/projects \
+    --url https://api.harvestapp.com/api/v2/reports/project_budget?is_active=true \
     --header "authorization: Bearer ${SB_HARVEST_TOKEN}" \
-    --header "harvest-account-id: ${SB_HARVEST_ACCOUNT}" | jq '[.projects[] | select(.is_active == true) | {project_id: .id | tostring, name: .name, budget: .budget, client: .client.name}]')
+    --header "harvest-account-id: ${SB_HARVEST_ACCOUNT}" | jq '[.results[] | {project_id: .project_id | tostring, name: .project_name, budget: .budget, budget_spent: .budget_spent, client: .client_name}]')
 
     results=$(jq -n --argjson projects "$projects" --argjson timesheets "$timesheets" '[JOIN(INDEX($projects[]; .project_id); $timesheets[]; .project_id; add) | select(.client) | . += {url: ("'$SB_HARVEST_URL'/projects/" + .project_id)}]')
 
-    echo $results | sunbeam query '[ .[] |
+    echo $results | jq '[ .[] |
     {
         title: (.client + " - " + .name),
-        subtitle: ((.hours | tostring) + " / " + (.budget | tostring)),
+        subtitle: ("(" + (.hours | tostring) + ") " + (.budget_spent | tostring) + " / " + (.budget | tostring)),
         actions: [
             {
                 title: "Open Harvest",
                 type: "open",
-                target: .url
+                url: .url
             },
             {
                 title: "Add Time",
                 key: "a",
                 type: "open",
-                target: "'$SB_HARVEST_URL'/time/week"
+                url: "'$SB_HARVEST_URL'/time/week"
             },
             {
                 title: "Copy Hours",
@@ -66,23 +66,40 @@ fi
 
 if [[ $COMMAND == "detail-project" ]]; then
 
-    PROJECT_ID=$(echo "$1" | sunbeam query -r '.params.project_id')
+    PROJECT_ID=$(echo "$1" | jq -r '.params.project_id')
 
     details=$(curl -s --request GET \
     --url "https://api.harvestapp.com/api/v2/time_entries?project_id=${PROJECT_ID}" \
     --header "authorization: Bearer ${SB_HARVEST_TOKEN}" \
     --header "harvest-account-id: ${SB_HARVEST_ACCOUNT}")
 
-    parsed_details=$(echo $details | sunbeam query '[
-        .time_entries[]
-        | {task_name: .task.name, user_name: .user.name, billable: .billable, hours: .hours}
-    ] | group_by(.task_name, .user_name, .billable)
-    | map({
-        task: [.[0].task_name, .[0].user_name , if .[0].billable then "Billable" else "Non Billable" end] | join(" - "),
-        total_hours: map(.hours) | add
-    })')
+    parsed_details=$(echo $details | jq '[ .time_entries[] | {task_name: .task.name, user_name: .user.name, billable: .billable, hours: .hours} ]
+        | group_by(.task_name)
+        | map({
+            task_name: .[0].task_name,
+            entries: group_by(.billable)
+            | map({
+                task_name: .[0].task_name,
+                billable_status: (.[0].billable | if . then "Billable" else "Non Billable" end),
+                user_name: .[0].user_name,
+                total_hours: map(.hours) | add
+            })
+        }) as $groupedTasks
+        | [
+            $groupedTasks[].entries[]
+        ] as $flatTasks
+        | $flatTasks
+        | group_by(.billable_status)
+        | map({
+            task_name: "TOTAL",
+            billable_status: .[0].billable_status,
+            user_name: "ALL",
+            total_hours: map(.total_hours) | add
+        }) as $totals
+        | $flatTasks + $totals
+        | map({task: [.task_name, .user_name, .billable_status ]| join(" - ") , total_hours})')
 
-    echo $parsed_details | sunbeam query '[ .[] |
+    echo $parsed_details | jq '[ .[] |
     {
         title: .task,
         subtitle: .total_hours | tostring,

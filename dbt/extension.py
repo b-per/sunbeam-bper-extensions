@@ -1,6 +1,5 @@
 import sys
 import json
-import pathlib
 
 import run_results
 import node_details
@@ -14,9 +13,9 @@ if len(sys.argv) == 1:
                 {
                     "name": "run-results",
                     "title": "List models run",
-                    "mode": "list",
+                    "mode": "filter",
                     "params": [
-                        {"name": "include-packages", "type": "boolean"},
+                        {"title": "Include packages", "name": "include-packages", "type": "text"},
                     ],
                 },
                 {
@@ -24,24 +23,24 @@ if len(sys.argv) == 1:
                     "title": "List details for a node",
                     "mode": "detail",
                     "params": [
-                        {"name": "filter", "type": "string", "required": True},
+                        {"title": "Filter", "name": "filter", "type": "text", "required": True},
                     ],
                 },
                 {
                     "name": "running-models-paste",
                     "title": "List running models (Paste logs)",
-                    "mode": "list",
+                    "mode": "filter",
                     "params": [
-                        {"name": "file", "type": "boolean"},
+                        {"title": "File", "name": "file", "type": "text"},
                     ],
                 },
                 {
                     "name": "running-models-file",
                     "title": "List running models (Read logs from file)",
-                    "mode": "list",
+                    "mode": "filter",
                     "params": [
-                        {"name": "dir", "type": "string"},
-                        {"name": "show-hidden", "type": "boolean"},
+                        {"title": "Dir", "name": "dir", "type": "text"},
+                        {"title": "Show Hidden", "name": "show-hidden", "type": "text"},
                     ],
                 },
             ],

@@ -6,12 +6,12 @@ COMMAND=$(echo "$1" | jq -r '.command')
 PROVIDERS='["dbt-labs/dbtcloud", "GtheSheep/dbt-cloud", "fivetran/fivetran", "Snowflake-Labs/snowflake", "databricks/databricks", "integrations/github"]'
 
 if [ $# -eq 0 ]; then
-/Users/bper/dev/sunbeam-main/sunbeam query -n '{
+jq -n '{
     title: "TF",
     commands: [
-        {name: "list-providers", mode: "list", title: "List Providers"},
-        {name: "list-releases", mode: "list", title: "List Releases", params: [{name: "provider", type: "string", required: true}]},
-        {name: "show-details", mode: "list", title: "Show Details", params: [{name: "id", type: "string", required: true}, {name: "version", type: "string", required: true}]}
+        {name: "list-providers", mode: "filter", title: "List Providers"},
+        {name: "list-releases", mode: "filter", title: "List Releases", params: [{title: "Provider", name: "provider", type: "text", required: true}]},
+        {name: "show-details", mode: "filter", title: "Show Details", params: [{title: "ID", name: "id", type: "text", required: true}, {title: "Version", name: "version", type: "text", required: true}]}
     ]
 }'
 exit 0
@@ -20,7 +20,7 @@ fi
 
 if [[ $COMMAND == "list-providers" ]]; then
 
-    echo $PROVIDERS |  /Users/bper/dev/sunbeam-main/sunbeam query --arg "command=$0" '
+    echo $PROVIDERS | jq '
         {
         items: map({
             title: .,
@@ -36,12 +36,12 @@ if [[ $COMMAND == "list-providers" ]]; then
 
 elif [[ $COMMAND == "list-releases" ]]; then
 
-    PROVIDER=$(echo "$1" | sunbeam query -r '.params.provider')
+    PROVIDER=$(echo "$1" | jq -r '.params.provider')
     versions=$(curl "https://registry.terraform.io/v2/providers/${PROVIDER}?include=categories,moved-to,potential-fork-of,provider-versions,top-modules&include=categories%2Cmoved-to%2Cpotential-fork-of%2Cprovider-versions%2Ctop-modules")
 
     ID=$(echo $versions | jq -r '.data.id')
 
-    echo $versions |  /Users/bper/dev/sunbeam-main/sunbeam query --arg "command=$0" --arg "provider=${PROVIDER}"  --arg "id=${ID}" '
+    echo $versions |  jq --arg provider "${PROVIDER}"  --arg id ${ID} '
         {
         items:
             (.included | sort_by(.attributes["published-at"]) | reverse | map({
@@ -59,7 +59,7 @@ elif [[ $COMMAND == "list-releases" ]]; then
                     title: "Open in Browser",
                     key: "o",
                     type: "open",
-                    target: ("https://registry.terraform.io/providers/" + $provider + "/" + (.attributes.version // ""))
+                    url: ("https://registry.terraform.io/providers/" + $provider + "/" + (.attributes.version // ""))
                 }
             ]
             }))
@@ -69,13 +69,13 @@ elif [[ $COMMAND == "list-releases" ]]; then
 
 elif [[ $COMMAND == "show-details" ]]; then
 
-    PARAMS=$(echo "$1" | sunbeam query '.params')
-    ID=$(echo $PARAMS | sunbeam query -r '.id')
-    VERSION=$(echo $PARAMS | sunbeam query -r '.version')
+    PARAMS=$(echo "$1" | jq '.params')
+    ID=$(echo $PARAMS | jq -r '.id')
+    VERSION=$(echo $PARAMS | jq -r '.version')
 
     details=$(curl "https://registry.terraform.io/v2/providers/${ID}/downloads/summary?filter%5Bversion%5D=${VERSION}")
 
-    echo $details | /Users/bper/dev/sunbeam-main/sunbeam query '
+    echo $details | jq '
         {
             items: [
                 {
