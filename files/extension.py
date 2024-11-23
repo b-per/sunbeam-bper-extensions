@@ -12,11 +12,11 @@ if len(sys.argv) == 1:
                     "title": "List files",
                     "mode": "filter",
                     "params": [
-                        {"title": "Directory", "name": "dir", "type": "text", "optional": True},
+                        {"title": "Directory", "name": "dir", "type": "string", "optional": True},
                         {
                             "title": "Show hidden",
                             "name": "show-hidden",
-                            "type": "text",
+                            "type": "string",
                             "optional": True,
                         },
                     ],
