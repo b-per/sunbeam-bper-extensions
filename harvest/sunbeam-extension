@@ -8,7 +8,7 @@ if [ $# -eq 0 ]; then
     title: "Harvest",
     commands: [
         { name: "list-projects", mode: "filter", title: "List Projects" },
-        { name: "detail-project", mode: "filter", title: "Detail Project", hidden: true, params: [{ title:"Project ID", name: "project_id", type: "text", required: true }]}
+        { name: "detail-project", mode: "filter", title: "Detail Project", hidden: true, params: [{ title:"Project ID", name: "project_id", type: "string", required: true }]}
     ]
 }'
 exit 0

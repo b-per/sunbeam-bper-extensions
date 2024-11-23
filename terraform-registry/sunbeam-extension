@@ -10,8 +10,8 @@ jq -n '{
     title: "TF",
     commands: [
         {name: "list-providers", mode: "filter", title: "List Providers"},
-        {name: "list-releases", mode: "filter", title: "List Releases", params: [{title: "Provider", name: "provider", type: "text", required: true}]},
-        {name: "show-details", mode: "filter", title: "Show Details", params: [{title: "ID", name: "id", type: "text", required: true}, {title: "Version", name: "version", type: "text", required: true}]}
+        {name: "list-releases", mode: "filter", title: "List Releases", params: [{title: "Provider", name: "provider", type: "string", required: true}]},
+        {name: "show-details", mode: "filter", title: "Show Details", params: [{title: "ID", name: "id", type: "string", required: true}, {title: "Version", name: "version", type: "string", required: true}]}
     ]
 }'
 exit 0

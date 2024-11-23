@@ -142,11 +142,12 @@ def execute(input_type, dir="."):
         json.dump(
             {
                 "emptyText": message,
+                # "autoRefreshSeconds": 1,
                 "actions": [
                     {
                         "title": "Refresh",
-                        "type": "run",
-                        "command": "running-models-file",
+                        "type": "refresh",
+                        # "command": "running-models-file",
                     },
                 ]
                 if input_type == "file"

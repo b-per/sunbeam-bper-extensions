@@ -16,8 +16,8 @@ if [ $# -eq 0 ]; then
     title: "GitHub",
     commands: [
         { name: "list-repos", mode: "filter", title: "List Repos" },
-        { name: "list-issues", mode: "filter", title: "List Issue", params: [{ title: "Repo", name: "repo", type: "text", required: true, description: "the repository to search for" }] },
-        { name: "list-prs", mode: "filter", title: "List PRs", params: [{ title: "Repo", name: "repo", type: "text", required: true, description: "the repository to search for" }] }
+        { name: "list-issues", mode: "filter", title: "List Issue", params: [{ title: "Repo", name: "repo", type: "string", required: true, description: "the repository to search for" }] },
+        { name: "list-prs", mode: "filter", title: "List PRs", params: [{ title: "Repo", name: "repo", type: "string", required: true, description: "the repository to search for" }] }
     ]
 }'
 exit 0

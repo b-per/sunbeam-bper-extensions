@@ -1,4 +1,3 @@
-import math
 import asciichartpy as asciichart
 import re
 from math import floor
@@ -33,7 +32,7 @@ def plot(y_array, config=None):
 
     plot = asciichart.plot(y_array, config)
 
-    full_width = max([len(strip_ansi(l)) for l in plot.split("\n")])
+    full_width = max([len(strip_ansi(label)) for label in plot.split("\n")])
 
     # if there is no array for x we use a range
     x_array = config.get("x_array", range(original_width))
@@ -48,7 +47,7 @@ def plot(y_array, config=None):
     width_x_axis = full_width - left_margin
 
     # get the number of characters of the longest x-axis label
-    longest_x_label = max([len(str(l)) for l in x_array])
+    longest_x_label = max([len(str(label)) for label in x_array])
     tick_distance = longest_x_label + 2
 
     ticks = " " * (left_margin - 1)

@@ -4,3 +4,4 @@ raycast-sunbeam/
 dev/
 .DS_Store
 __pycache__
+/test/

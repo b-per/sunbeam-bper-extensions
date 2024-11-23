@@ -21,7 +21,7 @@ if len(sys.argv) == 1:
                     "mode": "filter",
                     "hidden": True,
                     "params": [
-                        {"title": "Filter", "name": "filter", "type": "text", "required": True},
+                        {"title": "Filter", "name": "filter", "type": "string", "required": True},
                     ],
                 },
                 {
@@ -30,7 +30,7 @@ if len(sys.argv) == 1:
                     "mode": "detail",
                     "hidden": True,
                     "params": [
-                        {"title": "Filter", "name": "filter", "type": "text", "required": True},
+                        {"title": "Filter", "name": "filter", "type": "string", "required": True},
                     ],
                 },
                 {

@@ -6,9 +6,11 @@ import common
 from common import Requests, ts_to_datetime
 
 
-def metadata_entries_dbt(metada_entries):
+def metadata_entries_dbt(metadata_entries):
     values = [
-        meta["floatValue"] for meta in metada_entries if meta["__typename"] == "FloatMetadataEntry"
+        meta["floatValue"]
+        for meta in metadata_entries
+        if meta["__typename"] == "FloatMetadataEntry"
     ]
     return format(values[0], ".1f") if values else None
 

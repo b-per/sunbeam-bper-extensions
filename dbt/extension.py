@@ -40,7 +40,6 @@ if len(sys.argv) == 1:
                     "mode": "filter",
                     "params": [
                         {"title": "Dir", "name": "dir", "type": "text"},
-                        {"title": "Show Hidden", "name": "show-hidden", "type": "text"},
                     ],
                 },
             ],
